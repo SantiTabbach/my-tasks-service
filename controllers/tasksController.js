@@ -36,16 +36,16 @@ const getTaskById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   try {
-    const foundedTask = await Task.findById(id).exec();
+    const foundTask = await Task.findById(id).exec();
 
-    if (!foundedTask) {
+    if (!foundTask) {
       return res.status(404).json({ message: `Task with id ${id} not found` });
     }
-    return res.json(foundedTask);
+    return res.json(foundTask);
   } catch (error) {
     return res
       .status(500)
-      .send("Error while trying to get tasks: " + error.message);
+      .send("Error while trying to get task: " + error.message);
   }
 });
 
