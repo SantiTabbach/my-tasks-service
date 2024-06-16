@@ -26,5 +26,9 @@
     "mongoose": "^8.4.0",
     "mongoose-sequence": "^6.0.1",
     "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": "21.7.0",
+    "npm": "8.1.2"
   }
 }
