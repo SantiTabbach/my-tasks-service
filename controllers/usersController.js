@@ -14,6 +14,26 @@ const getAllUsers = asyncHandler(async (_req, res) => {
   res.json(users);
 });
 
+// @desc Get user by id
+// @route GET /users/:id
+// @access Private
+const getUserById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const foundUser = await User.findById(id).select("-password").lean();
+
+    if (!foundUser) {
+      return res.status(404).json({ message: `User with id ${id} not found` });
+    }
+    return res.json(foundUser);
+  } catch (error) {
+    return res
+      .status(500)
+      .send("Error while trying to get user: " + error.message);
+  }
+});
+
 // @desc Create a user
 // @route POST /users
 // @access Private
@@ -123,4 +143,5 @@ module.exports = {
   createNewUser,
   updateUser,
   deleteUser,
+  getUserById,
 };

@@ -7,9 +7,11 @@ router.route("/").post(usersController.createNewUser);
 
 router.use(verifyJWT);
 
+router.route("/").get(usersController.getAllUsers);
+
 router
-  .route("/")
-  .get(usersController.getAllUsers)
+  .route("/:id")
+  .get(usersController.getUserById)
   .patch(usersController.updateUser)
   .delete(usersController.deleteUser);
 
