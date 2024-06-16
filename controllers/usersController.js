@@ -20,12 +20,10 @@ const getAllUsers = asyncHandler(async (_req, res) => {
 const createNewUser = asyncHandler(async (req, res) => {
   const { username, password, roles } = req.body;
 
-  //Confirm data
   if (!username || !password || !Array.isArray(roles) || !roles.length) {
     return res.status(400).json({ message: "All fields are required." });
   }
 
-  //Check for duplicate
   const duplicate = await User.findOne({ username }).lean().exec();
 
   if (duplicate) {
@@ -34,16 +32,13 @@ const createNewUser = asyncHandler(async (req, res) => {
       .json({ message: `User with name ${username} already exists.` });
   }
 
-  //Hash password
   const hashedPwd = await bcrypt.hash(password, 10); // salt rounds
 
   const userObject = { username, password: hashedPwd, roles };
 
-  //Create and store new user
   const user = await User.create(userObject);
 
   if (user) {
-    //created
     res.status(201).json({ message: `New user ${username} created!` });
   } else {
     res.status(400).json({ message: "Invalid user data received" });
@@ -51,12 +46,11 @@ const createNewUser = asyncHandler(async (req, res) => {
 });
 
 // @desc Update a user
-// @route PATCH /users
+// @route PATCH /users/:id
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-  const { id, username, roles, active, password } = req.body;
-
-  //Confirm data
+  const { id } = req.params;
+  const { username, roles, active, password } = req.body;
 
   if (
     !id ||
@@ -74,9 +68,8 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User not found." });
   }
 
-  //Check for duplicate
   const duplicate = await User.findOne({ username }).lean().exec();
-  //Allow updates to the original user
+
   if (duplicate && duplicate?._id.toString() !== id) {
     return res
       .status(409)
@@ -88,7 +81,6 @@ const updateUser = asyncHandler(async (req, res) => {
   user.active = active;
 
   if (password) {
-    //Hash password
     user.password = await bcrypt.hash(password, 10); //salt rounds
   }
 
@@ -98,10 +90,10 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 // @desc Delete a user
-// @route DELETE /users
+// @route DELETE /users/:id
 // @access Private
 const deleteUser = asyncHandler(async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ message: "User ID Required" });
@@ -113,10 +105,10 @@ const deleteUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User not found" });
   }
 
-  const tasks = await Task.find({ owner: id }).lean().exec();
+  const tasks = await Task.find({ owner: id }).exec();
 
   if (tasks.length) {
-    await tasks.forEach(async (task) => await task.deleteOne());
+    await Promise.all(tasks.map(async (task) => await task.deleteOne()));
   }
 
   await user.deleteOne();
@@ -126,4 +118,9 @@ const deleteUser = asyncHandler(async (req, res) => {
   res.json(reply);
 });
 
-module.exports = { getAllUsers, createNewUser, updateUser, deleteUser };
+module.exports = {
+  getAllUsers,
+  createNewUser,
+  updateUser,
+  deleteUser,
+};
