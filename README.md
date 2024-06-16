@@ -21,5 +21,6 @@
 - [x] Add posibility to delete a Task.
 - [x] Add posibility to retrieve a Task.
 - [x] Add posibility to retrieve all user Tasks.
+- [ ] Add posibility to attach media to a Task.
 - [ ] Add Tasks pagination.
 - [ ] Add Users pagination.
