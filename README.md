@@ -1,4 +1,4 @@
-# My TODOs service
+# My Tasks service
 
 ## How to init server:
 
